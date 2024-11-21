@@ -119,7 +119,7 @@ sudo apt install apache2-utils
 #You can change user name, I'm using it as admin
 echo $(htpasswd -nB admin) | sed -e s/\\$/\\$\\$/g
 
-#It will ask you a password, enter your traefik dashboard password
+#It will ask you a password, enter the password that you want to use in your traefik dashboard
 
 #Then, copy result of the command
 
@@ -129,7 +129,11 @@ nano .env
 
 ```
 
-#### Then we will enter our htpasswd result into .env file that just created. Important thing is name of the envorientmet variable is same as in docker-compose.yaml files `      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}` area
+#### Then we will enter our htpasswd result into .env file that just created. Important thing is name of the envorientmet variable is same as in docker-compose.yaml files
+
+`  TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}`
+
+#### area
 
 ```.env
 
