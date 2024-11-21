@@ -49,6 +49,8 @@
 
 #### then, you can edit your docker-compose.yaml file with your envorientments.
 
+`docker-compose.yaml`
+
 ```yaml
 version: "3.8"
 
@@ -129,14 +131,105 @@ nano .env
 
 ```
 
-#### Then we will enter our htpasswd result into .env file that just created. Important thing is name of the envorientmet variable is same as in docker-compose.yaml files
+#### Then we will enter our htpasswd result into .env file that just created. Important thing is name of the envorientmet variable is same as in docker-compose.yaml file bellow area
 
 `  TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}`
 
-#### area
+#### If you changed that area, make .env variable name as changed name
+
+`.env`
 
 ```.env
 
 TRAEFIK_DASHBOARD_CREDENTIALS=user:$$2y$$05$$lSaEi.G.aIygyXRdiFpt7OqmUMW9QUG5I1N.j0bXoXxIjxQmoGOWu
 
 ```
+
+#### Now we can copy Cloudflare API token key to cf_api_token.txt file. First of all , you need to create API Token in Cloudflare Profile -> API Tokens -> Create Token -> Create Custom Token -> Zone.Zone, Zone.DNS -> save and copy the token if you didn't copy the token create another token because it's for one time
+
+```bash
+
+touch cf_api_token.txt
+nano cf_api_token.txt
+
+```
+
+#copy and paste API Token to this file
+
+`cf_api_token.txt`
+
+```txt
+
+YOUR_TOKEN
+
+```
+
+#### Then we need to add A records to our domain name will be traefik-dashboard and content will be your server ip address.
+
+#### So we need to create our data directory and create our acme.json and traefik.yml files for configration
+
+```bash
+
+mkdir data
+cd data
+touch acme.json
+chmod 600 acme.json
+
+touch traefik.yml
+nano traefik.yml
+
+```
+
+#### acme.json will be empty because traefik will fill it with certificates. So now lets fill our traefik.yml
+
+```yml
+api:
+  dashboard: true
+  debug: true
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+serversTransport:
+  insecureSkipVerify: false
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  # file:
+  #   filename: /config.yml
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: your_email_address
+      storage: acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+      dnsChallenge:
+        provider: cloudflare
+        #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
+        #delayBeforeCheck: 60s # uncomment along with disablePropagationCheck if needed to ensure the TXT record is ready before verification is attempted
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+```
+
+##### · Change "your_email_address" with your email
+
+##### · If you are testing you can uncomment the line bellow in traefik.yml and comment foregoing line.
+
+` # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging`
+
+#### So we are ready for run docker compose
+
+```bash
+docker compose up -d --force-recreate
+```
+
+#### Go to traefik-dashboard.your_domain_name.com and look at the certificate, if its let's encrypt certificate, Congratulations!
