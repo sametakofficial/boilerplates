@@ -2,11 +2,12 @@
 
 # Traefik Intallation
 
-    #### lets create a new directory named containers;
+#### lets create a new directory named containers;
 
     ```bash
     mkdir /containers
     cd /containers
 
     ```
-    #### next step we will create another directory for traefik installation. In contuinues steps we will create directories for portainer , mailcow and other contaiers so it wil be listed in one main directory
+
+#### next step we will create another directory for traefik installation. In contuinues steps we will create directories for portainer , mailcow and other contaiers so it wil be listed in one main directory
