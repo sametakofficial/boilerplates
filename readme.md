@@ -182,6 +182,8 @@ nano traefik.yml
 
 #### acme.json will be empty because traefik will fill it with certificates. So now lets fill our traefik.yml
 
+`traefik.yml`
+
 ```yml
 api:
   dashboard: true
